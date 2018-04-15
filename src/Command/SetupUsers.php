@@ -22,8 +22,8 @@ final class SetupUsers implements Command
 
     public function __invoke(Environment $env, Arguments $arguments, Options $options): void
     {
-        $this->rabbitmq->users()->declare('monitor', \random_bytes(32), 'administrator');
-        $this->rabbitmq->users()->declare('consumer', \random_bytes(32));
+        $this->rabbitmq->users()->declare('monitor', \sha1(\random_bytes(32)), 'administrator');
+        $this->rabbitmq->users()->declare('consumer', \sha1(\random_bytes(32)));
         $this->rabbitmq->permissions()->declare('/', 'monitor', '.*', '.*', '.*');
         $this->rabbitmq->permissions()->declare('/', 'consumer', '.*', '.*', '.*');
         $this->rabbitmq->users()->delete('guest');

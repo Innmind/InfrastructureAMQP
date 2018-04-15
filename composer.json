@@ -18,7 +18,8 @@
         "php": "~7.2",
         "innmind/cli": "^1.2",
         "innmind/server-control": "^2.5",
-        "innmind/immutable": "^2.8"
+        "innmind/immutable": "^2.8",
+        "innmind/rabbitmq-management": "^1.1"
     },
     "autoload": {
         "psr-4": {

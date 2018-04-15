@@ -32,7 +32,10 @@ final class Install implements Command
             'echo "deb https://dl.bintray.com/rabbitmq/debian stretch main" | tee /etc/apt/sources.list.d/bintray.rabbitmq.list',
             'wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc | apt-key add -',
             'apt-get update',
-            'apt-get install libsctp1 -y',
+            //whithout installing and uninstalling the esl-erlang package somehow
+            //won't be able to install
+            'apt-get install libsctp1 erlang erlang-base -y',
+            'apt-get remove erlang erlang-base erlang-base-hipe -y',
             'wget http://packages.erlang-solutions.com/site/esl/esl-erlang/FLAVOUR_1_general/esl-erlang_20.3-1~debian~stretch_amd64.deb',
             'dpkg -i esl-erlang_20.3-1~debian~stretch_amd64.deb',
             'rm esl-erlang_20.3-1~debian~stretch_amd64.deb',

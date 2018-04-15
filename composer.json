@@ -22,13 +22,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Innmind\\InfrastructureAMQP\\": "src/"
+            "Innmind\\Infrastructure\\AMQP\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\Innmind\\InfrastructureAMQP\\": "tests/",
-            "Fixture\\Innmind\\InfrastructureAMQP\\": "fixtures/"
+            "Tests\\Innmind\\Infrastructure\\AMQP\\": "tests/",
+            "Fixture\\Innmind\\Infrastructure\\AMQP\\": "fixtures/"
         }
     },
     "require-dev": {

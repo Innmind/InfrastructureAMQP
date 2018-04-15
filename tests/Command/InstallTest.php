@@ -1,9 +1,9 @@
 <?php
 declare(strict_types = 1);
 
-namespace Tests\Innmind\InfrastructureAMQP\Command;
+namespace Tests\Innmind\Infrastructure\AMQP\Command;
 
-use Innmind\InfrastructureAMQP\Command\Install;
+use Innmind\Infrastructure\AMQP\Command\Install;
 use Innmind\CLI\{
     Command,
     Command\Arguments,

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Innmind\InfrastructureAMQP\Command;
+namespace Innmind\Infrastructure\AMQP\Command;
 
 use Innmind\CLI\{
     Command,

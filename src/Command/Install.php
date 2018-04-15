@@ -59,12 +59,8 @@ final class Install implements Command
 
                 $output->write(Str::of($action)->append("\n"));
 
-                $process = $processes->execute(ServerCommand::foreground($action));
-                $process->output()->foreach(static function(Str $line) use ($output): void {
-                    $output->write($line);
-                });
-
-                return $process
+                return $processes
+                    ->execute(ServerCommand::foreground($action))
                     ->wait()
                     ->exitCode();
             }

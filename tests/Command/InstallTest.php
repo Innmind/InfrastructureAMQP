@@ -38,7 +38,7 @@ class InstallTest extends TestCase
             ->method('processes')
             ->willReturn($processes = $this->createMock(Processes::class));
         $processes
-            ->expects($this->exactly(12))
+            ->expects($this->exactly(14))
             ->method('execute')
             ->withConsecutive(
                 ['echo "deb https://dl.bintray.com/rabbitmq/debian stretch main" | tee /etc/apt/sources.list.d/bintray.rabbitmq.list'],
@@ -52,15 +52,17 @@ class InstallTest extends TestCase
                 ['rabbitmq-plugins enable rabbitmq_management'],
                 ['wget http://localhost:15672/cli/rabbitmqadmin'],
                 ['chmod +x rabbitmqadmin'],
-                ['mv rabbitmqadmin /usr/local/bin/rabbitmqadmin']
+                ['mv rabbitmqadmin /usr/local/bin/rabbitmqadmin'],
+                ['rabbitmqctl set_vm_memory_high_watermark 0.5'],
+                ['rabbitmqctl set_disk_free_limit mem_relative 2.0']
             )
             ->willReturn($process = $this->createMock(Process::class));
         $process
-            ->expects($this->exactly(12))
+            ->expects($this->exactly(14))
             ->method('wait')
             ->will($this->returnSelf());
         $process
-            ->expects($this->exactly(12))
+            ->expects($this->exactly(14))
             ->method('exitCode')
             ->willReturn(new ExitCode(0));
         $env = $this->createMock(Environment::class);

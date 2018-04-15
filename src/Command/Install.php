@@ -37,7 +37,9 @@ final class Install implements Command
             'rabbitmq-plugins enable rabbitmq_management',
             'wget http://localhost:15672/cli/rabbitmqadmin',
             'chmod +x rabbitmqadmin',
-            'mv rabbitmqadmin /usr/local/bin/rabbitmqadmin'
+            'mv rabbitmqadmin /usr/local/bin/rabbitmqadmin',
+            'rabbitmqctl set_vm_memory_high_watermark 0.5',
+            'rabbitmqctl set_disk_free_limit mem_relative 2.0'
         );
     }
 

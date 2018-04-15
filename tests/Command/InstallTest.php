@@ -76,6 +76,47 @@ class InstallTest extends TestCase
         ));
     }
 
+    public function testExitWithErrorCodeWhenOneActionFailed()
+    {
+        $install = new Install(
+            $server = $this->createMock(Server::class)
+        );
+        $server
+            ->expects($this->once())
+            ->method('processes')
+            ->willReturn($processes = $this->createMock(Processes::class));
+        $processes
+            ->expects($this->exactly(2))
+            ->method('execute')
+            ->withConsecutive(
+                ['echo "deb https://dl.bintray.com/rabbitmq/debian stretch main" | tee /etc/apt/sources.list.d/bintray.rabbitmq.list'],
+                ['wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc | apt-key add -']
+            )
+            ->willReturn($process = $this->createMock(Process::class));
+        $process
+            ->expects($this->exactly(2))
+            ->method('wait')
+            ->will($this->returnSelf());
+        $process
+            ->expects($this->exactly(2))
+            ->method('exitCode')
+            ->will($this->onConsecutiveCalls(
+                new ExitCode(0),
+                new ExitCode(1)
+            ));
+        $env = $this->createMock(Environment::class);
+        $env
+            ->expects($this->once())
+            ->method('exit')
+            ->with(1);
+
+        $this->assertNull($install(
+            $env,
+            new Arguments,
+            new Options
+        ));
+    }
+
     public function testUsage()
     {
         $expected = <<<USAGE

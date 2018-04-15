@@ -14,7 +14,10 @@ use Innmind\Server\Control\{
     Server\Command as ServerCommand,
     Server\Process\ExitCode,
 };
-use Innmind\Immutable\Stream;
+use Innmind\Immutable\{
+    Stream,
+    Str,
+};
 
 final class Install implements Command
 {
@@ -46,15 +49,22 @@ final class Install implements Command
     public function __invoke(Environment $env, Arguments $arguments, Options $options): void
     {
         $processes = $this->server->processes();
+        $output = $env->output();
         $exitCode = $this->actions->reduce(
             new ExitCode(0),
-            static function(ExitCode $exitCode, string $action) use ($processes): ExitCode {
+            static function(ExitCode $exitCode, string $action) use ($processes, $output): ExitCode {
                 if (!$exitCode->isSuccessful()) {
                     return $exitCode;
                 }
 
-                return $processes
-                    ->execute(ServerCommand::foreground($action))
+                $output->write(Str::of($action)->append("\n"));
+
+                $process = $processes->execute(ServerCommand::foreground($action));
+                $process->output()->foreach(static function(Str $line) use ($output): void {
+                    $output->write($line);
+                });
+
+                return $process
                     ->wait()
                     ->exitCode();
             }

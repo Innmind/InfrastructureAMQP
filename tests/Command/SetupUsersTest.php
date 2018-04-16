@@ -46,7 +46,7 @@ class SetupUsersTest extends TestCase
             ->with(
                 'monitor',
                 $this->callback(static function($password): bool {
-                    return strlen($password) === 32;
+                    return strlen($password) === 40;
                 }),
                 'administrator'
             );
@@ -56,7 +56,7 @@ class SetupUsersTest extends TestCase
             ->with(
                 'consumer',
                 $this->callback(static function($password): bool {
-                    return strlen($password) === 32;
+                    return strlen($password) === 40;
                 })
             );
         $users

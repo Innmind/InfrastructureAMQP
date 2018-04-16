@@ -38,13 +38,14 @@ class InstallTest extends TestCase
             ->method('processes')
             ->willReturn($processes = $this->createMock(Processes::class));
         $processes
-            ->expects($this->exactly(14))
+            ->expects($this->exactly(15))
             ->method('execute')
             ->withConsecutive(
                 ['echo "deb https://dl.bintray.com/rabbitmq/debian stretch main" | tee /etc/apt/sources.list.d/bintray.rabbitmq.list'],
                 ['wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc | apt-key add -'],
                 ['apt-get update'],
-                ['apt-get install libsctp1 -y'],
+                ['apt-get install libsctp1 erlang erlang-base -y'],
+                ['apt-get remove erlang erlang-base erlang-base-hipe -y'],
                 ['wget http://packages.erlang-solutions.com/site/esl/esl-erlang/FLAVOUR_1_general/esl-erlang_20.3-1~debian~stretch_amd64.deb'],
                 ['dpkg -i esl-erlang_20.3-1~debian~stretch_amd64.deb'],
                 ['rm esl-erlang_20.3-1~debian~stretch_amd64.deb'],
@@ -58,11 +59,11 @@ class InstallTest extends TestCase
             )
             ->willReturn($process = $this->createMock(Process::class));
         $process
-            ->expects($this->exactly(14))
+            ->expects($this->exactly(15))
             ->method('wait')
             ->will($this->returnSelf());
         $process
-            ->expects($this->exactly(14))
+            ->expects($this->exactly(15))
             ->method('exitCode')
             ->willReturn(new ExitCode(0));
         $env = $this->createMock(Environment::class);

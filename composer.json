@@ -19,13 +19,13 @@
         "innmind/cli": "^1.2",
         "innmind/server-control": "^2.5",
         "innmind/immutable": "^2.8",
-        "innmind/rabbitmq-management": "^1.1",
-        "innmind/compose": "^1.4"
+        "innmind/rabbitmq-management": "^1.1"
     },
     "autoload": {
         "psr-4": {
             "Innmind\\Infrastructure\\AMQP\\": "src/"
-        }
+        },
+        "files": ["src/bootstrap.php"]
     },
     "autoload-dev": {
         "psr-4": {

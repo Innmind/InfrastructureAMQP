@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Infrastructure\AMQP\Command;
 
-use Innmind\Infrastructure\AMQP\Command\SetupUsers;
+use Innmind\Infrastructure\AMQP\{
+    Command\SetupUsers,
+    Event\UserWasAdded,
+};
 use Innmind\CLI\{
     Command,
     Command\Arguments,
@@ -15,6 +18,7 @@ use Innmind\RabbitMQ\Management\{
     Control\Users,
     Control\Permissions,
 };
+use Innmind\EventBus\EventBusInterface;
 use PHPUnit\Framework\TestCase;
 
 class SetupUsersTest extends TestCase
@@ -23,15 +27,20 @@ class SetupUsersTest extends TestCase
     {
         $this->assertInstanceOf(
             Command::class,
-            new SetupUsers($this->createMock(Control::class))
+            new SetupUsers(
+                $this->createMock(Control::class),
+                $this->createMock(EventBusInterface::class)
+            )
         );
     }
 
     public function testInvokation()
     {
         $setup = new SetupUsers(
-            $control = $this->createMock(Control::class)
+            $control = $this->createMock(Control::class),
+            $bus = $this->createMock(EventBusInterface::class)
         );
+        $monitor = $consumer = null;
         $control
             ->expects($this->exactly(3))
             ->method('users')
@@ -45,7 +54,9 @@ class SetupUsersTest extends TestCase
             ->method('declare')
             ->with(
                 'monitor',
-                $this->callback(static function($password): bool {
+                $this->callback(static function($password) use (&$monitor): bool {
+                    $monitor = $password;
+
                     return strlen($password) === 40;
                 }),
                 'administrator'
@@ -55,7 +66,9 @@ class SetupUsersTest extends TestCase
             ->method('declare')
             ->with(
                 'consumer',
-                $this->callback(static function($password): bool {
+                $this->callback(static function($password) use (&$consumer): bool {
+                    $consumer = $password;
+
                     return strlen($password) === 40;
                 })
             );
@@ -71,6 +84,20 @@ class SetupUsersTest extends TestCase
             ->expects($this->at(1))
             ->method('declare')
             ->with('/', 'consumer', '.*', '.*', '.*');
+        $bus
+            ->expects($this->at(0))
+            ->method('dispatch')
+            ->with($this->callback(static function(UserWasAdded $event) use (&$monitor): bool {
+                return $event->user() === 'monitor' &&
+                    $event->password() === $monitor;
+            }));
+        $bus
+            ->expects($this->at(1))
+            ->method('dispatch')
+            ->with($this->callback(static function(UserWasAdded $event) use (&$consumer): bool {
+                return $event->user() === 'consumer' &&
+                    $event->password() === $consumer;
+            }));
 
         $this->assertNull($setup(
             $this->createMock(Environment::class),
@@ -89,7 +116,10 @@ USAGE;
 
         $this->assertSame(
             $expected,
-            (string) new SetupUsers($this->createMock(Control::class))
+            (string) new SetupUsers(
+                $this->createMock(Control::class),
+                $this->createMock(EventBusInterface::class)
+            )
         );
     }
 }

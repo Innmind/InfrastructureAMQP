@@ -10,6 +10,11 @@ use Innmind\Infrastructure\AMQP\{
 use Innmind\CLI\Commands;
 use Innmind\Server\Control\ServerFactory;
 use Innmind\RabbitMQ\Management\Control\Control;
+use Innmind\EventBus\EventBus;
+use Innmind\Immutable\{
+    Map,
+    SetInterface,
+};
 
 function bootstrap(): Commands
 {
@@ -18,7 +23,8 @@ function bootstrap(): Commands
     return new Commands(
         new Install($server),
         new SetupUsers(
-            new Control($server)
+            new Control($server),
+            new EventBus(new Map('string', SetInterface::class))
         )
     );
 }

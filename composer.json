@@ -19,7 +19,8 @@
         "innmind/cli": "^1.2",
         "innmind/server-control": "^2.5",
         "innmind/immutable": "^2.8",
-        "innmind/rabbitmq-management": "^1.1"
+        "innmind/rabbitmq-management": "^1.1",
+        "innmind/event-bus": "^2.3"
     },
     "autoload": {
         "psr-4": {

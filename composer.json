@@ -21,7 +21,7 @@
         "innmind/immutable": "^2.8",
         "innmind/rabbitmq-management": "^1.1",
         "innmind/event-bus": "^2.3",
-        "innmind/installation-monitor": "^1.0"
+        "innmind/installation-monitor": "^1.1"
     },
     "autoload": {
         "psr-4": {

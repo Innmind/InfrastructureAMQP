@@ -14,7 +14,6 @@ use Innmind\Server\Control\ServerFactory;
 use Innmind\RabbitMQ\Management\Control\Control;
 use Innmind\EventBus\EventBus;
 use function Innmind\InstallationMonitor\bootstrap as monitor;
-use Innmind\Socket\Address\Unix as Address;
 use Innmind\Immutable\{
     Map,
     SetInterface,
@@ -39,9 +38,7 @@ function bootstrap(): Commands
                             'callable',
                             new InstallationMonitor(
                                 $monitor['client']['silence'](
-                                    $monitor['client']['socket'](
-                                        new Address('/tmp/installation-monitor')
-                                    )
+                                    $monitor['client']['socket']()
                                 )
                             )
                         )

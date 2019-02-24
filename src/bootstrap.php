@@ -10,36 +10,27 @@ use Innmind\Infrastructure\AMQP\{
     Listener\InstallationMonitor,
 };
 use Innmind\CLI\Commands;
-use Innmind\Server\Control\ServerFactory;
 use Innmind\RabbitMQ\Management\Control\Control;
-use Innmind\EventBus\EventBus;
+use Innmind\OperatingSystem\OperatingSystem;
 use function Innmind\InstallationMonitor\bootstrap as monitor;
-use Innmind\Immutable\{
-    Map,
-    SetInterface,
-    Set,
-};
+use function Innmind\EventBus\bootstrap as eventBus;
+use Innmind\Immutable\Map;
 
-function bootstrap(): Commands
+function bootstrap(OperatingSystem $os): Commands
 {
-    $monitor = monitor();
-
-    $server = ServerFactory::build();
+    $monitor = monitor($os);
 
     return new Commands(
-        new Install($server),
+        new Install($os->control()),
         new SetupUsers(
-            new Control($server),
-            new EventBus(
-                (new Map('string', SetInterface::class))
-                    ->put(
+            new Control($os->control()),
+            eventBus()['bus'](
+                Map::of('string', 'callable')
+                    (
                         UserWasAdded::class,
-                        Set::of(
-                            'callable',
-                            new InstallationMonitor(
-                                $monitor['client']['silence'](
-                                    $monitor['client']['socket']()
-                                )
+                        new InstallationMonitor(
+                            $monitor['client']['silence'](
+                                $monitor['client']['ipc']()
                             )
                         )
                     )

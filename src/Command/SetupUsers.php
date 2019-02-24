@@ -11,17 +11,17 @@ use Innmind\CLI\{
     Environment,
 };
 use Innmind\RabbitMQ\Management\Control;
-use Innmind\EventBus\EventBusInterface;
+use Innmind\EventBus\EventBus;
 
 final class SetupUsers implements Command
 {
     private $rabbitmq;
-    private $bus;
+    private $dispatch;
 
-    public function __construct(Control $rabbitmq, EventBusInterface $bus)
+    public function __construct(Control $rabbitmq, EventBus $dispatch)
     {
         $this->rabbitmq = $rabbitmq;
-        $this->bus = $bus;
+        $this->dispatch = $dispatch;
     }
 
     public function __invoke(Environment $env, Arguments $arguments, Options $options): void
@@ -32,8 +32,8 @@ final class SetupUsers implements Command
         $this->rabbitmq->permissions()->declare('/', 'consumer', '.*', '.*', '.*');
         $this->rabbitmq->users()->delete('guest');
 
-        $this->bus->dispatch(new UserWasAdded('monitor', $monitor));
-        $this->bus->dispatch(new UserWasAdded('consumer', $consumer));
+        ($this->dispatch)(new UserWasAdded('monitor', $monitor));
+        ($this->dispatch)(new UserWasAdded('consumer', $consumer));
     }
 
     public function __toString(): string

@@ -18,7 +18,7 @@ use Innmind\RabbitMQ\Management\{
     Control\Users,
     Control\Permissions,
 };
-use Innmind\EventBus\EventBusInterface;
+use Innmind\EventBus\EventBus;
 use PHPUnit\Framework\TestCase;
 
 class SetupUsersTest extends TestCase
@@ -29,7 +29,7 @@ class SetupUsersTest extends TestCase
             Command::class,
             new SetupUsers(
                 $this->createMock(Control::class),
-                $this->createMock(EventBusInterface::class)
+                $this->createMock(EventBus::class)
             )
         );
     }
@@ -38,7 +38,7 @@ class SetupUsersTest extends TestCase
     {
         $setup = new SetupUsers(
             $control = $this->createMock(Control::class),
-            $bus = $this->createMock(EventBusInterface::class)
+            $bus = $this->createMock(EventBus::class)
         );
         $monitor = $consumer = null;
         $control
@@ -86,14 +86,14 @@ class SetupUsersTest extends TestCase
             ->with('/', 'consumer', '.*', '.*', '.*');
         $bus
             ->expects($this->at(0))
-            ->method('dispatch')
+            ->method('__invoke')
             ->with($this->callback(static function(UserWasAdded $event) use (&$monitor): bool {
                 return $event->user() === 'monitor' &&
                     $event->password() === $monitor;
             }));
         $bus
             ->expects($this->at(1))
-            ->method('dispatch')
+            ->method('__invoke')
             ->with($this->callback(static function(UserWasAdded $event) use (&$consumer): bool {
                 return $event->user() === 'consumer' &&
                     $event->password() === $consumer;
@@ -118,7 +118,7 @@ USAGE;
             $expected,
             (string) new SetupUsers(
                 $this->createMock(Control::class),
-                $this->createMock(EventBusInterface::class)
+                $this->createMock(EventBus::class)
             )
         );
     }

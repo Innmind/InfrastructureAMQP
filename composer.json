@@ -21,7 +21,8 @@
         "innmind/immutable": "^2.8",
         "innmind/rabbitmq-management": "^1.1",
         "innmind/event-bus": "^3.0",
-        "innmind/installation-monitor": "^2.1"
+        "innmind/installation-monitor": "^2.1",
+        "innmind/silent-cartographer": "^1.1"
     },
     "autoload": {
         "psr-4": {
@@ -42,5 +43,13 @@
     "scripts": {
         "test": "vendor/bin/phpunit --colors=always"
     },
-    "bin": ["infrastructure-amqp"]
+    "bin": ["infrastructure-amqp"],
+    "extra": {
+        "gene": {
+            "expression": [
+                "infrastructure-amqp install",
+                "infrastructure-amqp setup-users"
+            ]
+        }
+    }
 }

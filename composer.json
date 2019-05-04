@@ -42,5 +42,13 @@
     "scripts": {
         "test": "vendor/bin/phpunit --colors=always"
     },
-    "bin": ["infrastructure-amqp"]
+    "bin": ["infrastructure-amqp"],
+    "extra": {
+        "gene": {
+            "expression": [
+                "infrastructure-amqp install",
+                "infrastructure-amqp setup-users"
+            ]
+        }
+    }
 }

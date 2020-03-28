@@ -15,19 +15,19 @@ use Innmind\Server\Control\{
     Server\Process\ExitCode,
 };
 use Innmind\Immutable\{
-    Stream,
+    Sequence,
     Str,
 };
 
 final class Install implements Command
 {
-    private $server;
-    private $actions;
+    private Server $server;
+    private Sequence $actions;
 
     public function __construct(Server $server)
     {
         $this->server = $server;
-        $this->actions = Stream::of(
+        $this->actions = Sequence::of(
             'string',
             'echo "deb https://dl.bintray.com/rabbitmq/debian stretch main" | tee /etc/apt/sources.list.d/bintray.rabbitmq.list',
             'wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc | apt-key add -',
@@ -45,7 +45,7 @@ final class Install implements Command
             'chmod +x rabbitmqadmin',
             'mv rabbitmqadmin /usr/local/bin/rabbitmqadmin',
             'rabbitmqctl set_vm_memory_high_watermark 0.5',
-            'rabbitmqctl set_disk_free_limit mem_relative 2.0'
+            'rabbitmqctl set_disk_free_limit mem_relative 2.0',
         );
     }
 
@@ -62,16 +62,16 @@ final class Install implements Command
 
                 $output->write(Str::of($action)->append("\n"));
 
-                return $processes
-                    ->execute(ServerCommand::foreground($action))
-                    ->wait()
-                    ->exitCode();
-            }
+                $process = $processes->execute(ServerCommand::foreground($action));
+                $process->wait();
+
+                return $process->exitCode();
+            },
         );
         $env->exit($exitCode->toInt());
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return <<<USAGE
 install

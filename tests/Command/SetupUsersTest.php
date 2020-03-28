@@ -116,10 +116,10 @@ USAGE;
 
         $this->assertSame(
             $expected,
-            (string) new SetupUsers(
+            (new SetupUsers(
                 $this->createMock(Control::class),
                 $this->createMock(EventBus::class)
-            )
+            ))->toString(),
         );
     }
 }

@@ -26,9 +26,9 @@ class InstallationMonitorTest extends TestCase
             ->method('send')
             ->with(new Event(
                 new Event\Name('amqp.user_added'),
-                (new Map('string', 'variable'))
-                    ->put('name', 'user')
-                    ->put('password', 'watev')
+                Map::of('string', 'scalar|array')
+                    ('name', 'user')
+                    ('password', 'watev')
             ));
 
         $this->assertNull($dispatch(new UserWasAdded('user', 'watev')));

@@ -15,8 +15,8 @@ use Innmind\EventBus\EventBus;
 
 final class SetupUsers implements Command
 {
-    private $rabbitmq;
-    private $dispatch;
+    private Control $rabbitmq;
+    private EventBus $dispatch;
 
     public function __construct(Control $rabbitmq, EventBus $dispatch)
     {
@@ -36,7 +36,7 @@ final class SetupUsers implements Command
         ($this->dispatch)(new UserWasAdded('consumer', $consumer));
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return <<<USAGE
 setup-users

@@ -21,6 +21,7 @@ final class InstallationMonitor
 
     public function __invoke(UserWasAdded $event): void
     {
+        /** @psalm-suppress InvalidArgument */
         $this->client->send(new Event(
             new Event\Name('amqp.user_added'),
             Map::of('string', 'scalar|array')

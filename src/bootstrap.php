@@ -20,6 +20,10 @@ function bootstrap(OperatingSystem $os): Commands
 {
     $monitor = monitor($os);
 
+    /**
+     * @psalm-suppress InvalidScalarArgument
+     * @psalm-suppress InvalidArgument
+     */
     return new Commands(
         new Install($os->control()),
         new SetupUsers(

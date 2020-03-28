@@ -15,8 +15,8 @@ use Innmind\EventBus\EventBus;
 
 final class SetupUsers implements Command
 {
-    private $rabbitmq;
-    private $dispatch;
+    private Control $rabbitmq;
+    private EventBus $dispatch;
 
     public function __construct(Control $rabbitmq, EventBus $dispatch)
     {

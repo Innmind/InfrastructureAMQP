@@ -36,7 +36,7 @@ final class SetupUsers implements Command
         ($this->dispatch)(new UserWasAdded('consumer', $consumer));
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return <<<USAGE
 setup-users

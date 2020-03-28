@@ -41,21 +41,51 @@ class InstallTest extends TestCase
             ->expects($this->exactly(15))
             ->method('execute')
             ->withConsecutive(
-                ['echo "deb https://dl.bintray.com/rabbitmq/debian stretch main" | tee /etc/apt/sources.list.d/bintray.rabbitmq.list'],
-                ['wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc | apt-key add -'],
-                ['apt-get update'],
-                ['apt-get install libsctp1 erlang erlang-base -y'],
-                ['apt-get remove erlang erlang-base erlang-base-hipe -y'],
-                ['wget http://packages.erlang-solutions.com/site/esl/esl-erlang/FLAVOUR_1_general/esl-erlang_20.3-1~debian~stretch_amd64.deb'],
-                ['dpkg -i esl-erlang_20.3-1~debian~stretch_amd64.deb'],
-                ['rm esl-erlang_20.3-1~debian~stretch_amd64.deb'],
-                ['apt-get install rabbitmq-server -y'],
-                ['rabbitmq-plugins enable rabbitmq_management'],
-                ['wget http://localhost:15672/cli/rabbitmqadmin'],
-                ['chmod +x rabbitmqadmin'],
-                ['mv rabbitmqadmin /usr/local/bin/rabbitmqadmin'],
-                ['rabbitmqctl set_vm_memory_high_watermark 0.5'],
-                ['rabbitmqctl set_disk_free_limit mem_relative 2.0']
+                [$this->callback(function($command) {
+                    return $command->toString() === 'echo "deb https://dl.bintray.com/rabbitmq/debian stretch main" | tee /etc/apt/sources.list.d/bintray.rabbitmq.list';
+                })],
+                [$this->callback(function($command) {
+                    return $command->toString() === 'wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc | apt-key add -';
+                })],
+                [$this->callback(function($command) {
+                    return $command->toString() === 'apt-get update';
+                })],
+                [$this->callback(function($command) {
+                    return $command->toString() === 'apt-get install libsctp1 erlang erlang-base -y';
+                })],
+                [$this->callback(function($command) {
+                    return $command->toString() === 'apt-get remove erlang erlang-base erlang-base-hipe -y';
+                })],
+                [$this->callback(function($command) {
+                    return $command->toString() === 'wget http://packages.erlang-solutions.com/site/esl/esl-erlang/FLAVOUR_1_general/esl-erlang_20.3-1~debian~stretch_amd64.deb';
+                })],
+                [$this->callback(function($command) {
+                    return $command->toString() === 'dpkg -i esl-erlang_20.3-1~debian~stretch_amd64.deb';
+                })],
+                [$this->callback(function($command) {
+                    return $command->toString() === 'rm esl-erlang_20.3-1~debian~stretch_amd64.deb';
+                })],
+                [$this->callback(function($command) {
+                    return $command->toString() === 'apt-get install rabbitmq-server -y';
+                })],
+                [$this->callback(function($command) {
+                    return $command->toString() === 'rabbitmq-plugins enable rabbitmq_management';
+                })],
+                [$this->callback(function($command) {
+                    return $command->toString() === 'wget http://localhost:15672/cli/rabbitmqadmin';
+                })],
+                [$this->callback(function($command) {
+                    return $command->toString() === 'chmod +x rabbitmqadmin';
+                })],
+                [$this->callback(function($command) {
+                    return $command->toString() === 'mv rabbitmqadmin /usr/local/bin/rabbitmqadmin';
+                })],
+                [$this->callback(function($command) {
+                    return $command->toString() === 'rabbitmqctl set_vm_memory_high_watermark 0.5';
+                })],
+                [$this->callback(function($command) {
+                    return $command->toString() === 'rabbitmqctl set_disk_free_limit mem_relative 2.0';
+                })],
             )
             ->willReturn($process = $this->createMock(Process::class));
         $process
@@ -92,14 +122,17 @@ class InstallTest extends TestCase
             ->expects($this->exactly(2))
             ->method('execute')
             ->withConsecutive(
-                ['echo "deb https://dl.bintray.com/rabbitmq/debian stretch main" | tee /etc/apt/sources.list.d/bintray.rabbitmq.list'],
-                ['wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc | apt-key add -']
+                [$this->callback(function($command) {
+                    return $command->toString() === 'echo "deb https://dl.bintray.com/rabbitmq/debian stretch main" | tee /etc/apt/sources.list.d/bintray.rabbitmq.list';
+                })],
+                [$this->callback(function($command) {
+                    return $command->toString() === 'wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc | apt-key add -';
+                })]
             )
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->exactly(2))
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->exactly(2))
             ->method('exitCode')
@@ -131,6 +164,6 @@ It only works for Debian Stretch as we need to configure the repositories
 from which we'll fetch rabbitmq package
 USAGE;
 
-        $this->assertSame($expected, (string) new Install($this->createMock(Server::class)));
+        $this->assertSame($expected, (new Install($this->createMock(Server::class)))->toString());
     }
 }

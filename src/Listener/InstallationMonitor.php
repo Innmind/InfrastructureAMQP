@@ -23,9 +23,9 @@ final class InstallationMonitor
     {
         $this->client->send(new Event(
             new Event\Name('amqp.user_added'),
-            (new Map('string', 'variable'))
-                ->put('name', $event->user())
-                ->put('password', $event->password())
+            Map::of('string', 'scalar|array')
+                ('name', $event->user())
+                ('password', $event->password())
         ));
     }
 }

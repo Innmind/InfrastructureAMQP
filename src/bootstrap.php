@@ -34,11 +34,11 @@ function bootstrap(OperatingSystem $os): Commands
                         UserWasAdded::class,
                         new InstallationMonitor(
                             $monitor['client']['silence'](
-                                $monitor['client']['ipc']()
+                                $monitor['client']['ipc'](),
                             )
-                        )
-                    )
-            )
-        )
+                        ),
+                    ),
+            ),
+        ),
     );
 }

@@ -45,7 +45,7 @@ final class Install implements Command
             'chmod +x rabbitmqadmin',
             'mv rabbitmqadmin /usr/local/bin/rabbitmqadmin',
             'rabbitmqctl set_vm_memory_high_watermark 0.5',
-            'rabbitmqctl set_disk_free_limit mem_relative 2.0'
+            'rabbitmqctl set_disk_free_limit mem_relative 2.0',
         );
     }
 
@@ -66,7 +66,7 @@ final class Install implements Command
                 $process->wait();
 
                 return $process->exitCode();
-            }
+            },
         );
         $env->exit($exitCode->toInt());
     }

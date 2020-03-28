@@ -26,7 +26,7 @@ final class InstallationMonitor
             new Event\Name('amqp.user_added'),
             Map::of('string', 'scalar|array')
                 ('name', $event->user())
-                ('password', $event->password())
+                ('password', $event->password()),
         ));
     }
 }

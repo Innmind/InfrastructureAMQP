@@ -22,13 +22,13 @@ use Innmind\Immutable\{
 final class Install implements Command
 {
     private Server $server;
+    /** @var Sequence<string> */
     private Sequence $actions;
 
     public function __construct(Server $server)
     {
         $this->server = $server;
-        $this->actions = Sequence::of(
-            'string',
+        $this->actions = Sequence::strings(
             'echo "deb https://dl.bintray.com/rabbitmq/debian stretch main" | tee /etc/apt/sources.list.d/bintray.rabbitmq.list',
             'wget -O- https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc | apt-key add -',
             'apt-get update',

@@ -16,20 +16,13 @@
     },
     "require": {
         "php": "~7.4",
-        "innmind/cli": "~2.0",
-        "innmind/operating-system": "~2.0",
-        "innmind/immutable": "~3.5",
         "innmind/rabbitmq-management": "~2.0",
-        "innmind/event-bus": "~4.0",
-        "innmind/installation-monitor": "~3.0",
-        "innmind/silent-cartographer": "~2.0",
         "innmind/genome": "^3.0"
     },
     "autoload": {
         "psr-4": {
             "Innmind\\Infrastructure\\AMQP\\": "src/"
-        },
-        "files": ["src/bootstrap.php"]
+        }
     },
     "autoload-dev": {
         "psr-4": {
@@ -39,10 +32,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "~8.0",
-        "giorgiosironi/eris": "^0.11.0",
         "vimeo/psalm": "^3.10"
     },
-    "bin": ["infrastructure-amqp"],
     "provide": {
         "innmind/genome": "3.0"
     }

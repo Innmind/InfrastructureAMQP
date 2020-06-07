@@ -19,6 +19,13 @@ use Innmind\Server\Control\{
 
 final class Install implements Gene
 {
+    private string $distribution;
+
+    public function __construct(string $distribution = 'bionic')
+    {
+        $this->distribution = $distribution;
+    }
+
     public function name(): string
     {
         return 'AMQP install';
@@ -40,45 +47,48 @@ final class Install implements Gene
 
         try {
             $install = new Script(
-                Command::foreground('echo')
-                    ->withArgument('deb https://dl.bintray.com/rabbitmq/debian stretch main')
-                    ->pipe(
-                        Command::foreground('tee')
-                            ->withArgument('/etc/apt/sources.list.d/bintray.rabbitmq.list'),
-                    ),
-                Command::foreground('wget')
-                    ->withShortOption('O', '-')
-                    ->withArgument('https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc')
+                Command::foreground('apt')
+                    ->withArgument('update')
+                    ->withShortOption('y'),
+                Command::foreground('apt')
+                    ->withArgument('install')
+                    ->withShortOption('y')
+                    ->withArgument('curl')
+                    ->withArgument('gnupg'),
+                Command::foreground('curl')
+                    ->withShortOption('fsSL')
+                    ->withArgument('https://github.com/rabbitmq/signing-keys/releases/download/2.0/rabbitmq-release-signing-key.asc')
                     ->pipe(
                         Command::foreground('apt-key')
                             ->withArgument('add')
                             ->withArgument('-'),
                     ),
-                Command::foreground('apt')->withArgument('update'),
-                // whithout installing and uninstalling the esl-erlang package
-                // somehow won't be able to install
                 Command::foreground('apt')
                     ->withArgument('install')
                     ->withShortOption('y')
-                    ->withArgument('libsctp1')
-                    ->withArgument('erlang')
-                    ->withArgument('erlang-base'),
+                    ->withArgument('apt-transport-https'),
+                Command::foreground('echo')
+                    ->withArgument("deb https://dl.bintray.com/rabbitmq-erlang/debian {$this->distribution} erlang")
+                    ->pipe(
+                        Command::foreground('tee')
+                            ->withShortOption('a')
+                            ->withArgument('/etc/apt/sources.list.d/bintray.rabbitmq.list'),
+                    ),
+                Command::foreground('echo')
+                    ->withArgument("deb https://dl.bintray.com/rabbitmq/debian {$this->distribution} main")
+                    ->pipe(
+                        Command::foreground('tee')
+                            ->withShortOption('a')
+                            ->withArgument('/etc/apt/sources.list.d/bintray.rabbitmq.list'),
+                    ),
                 Command::foreground('apt')
-                    ->withArgument('remove')
-                    ->withShortOption('y')
-                    ->withArgument('erlang')
-                    ->withArgument('erlang-base')
-                    ->withArgument('erlang-base-hipe'),
-                Command::foreground('wget')
-                    ->withArgument('http://packages.erlang-solutions.com/site/esl/esl-erlang/FLAVOUR_1_general/esl-erlang_20.3-1~debian~stretch_amd64.deb'),
-                Command::foreground('dpkg')
-                    ->withShortOption('i', 'esl-erlang_20.3-1~debian~stretch_amd64.deb'),
-                Command::foreground('rm')
-                    ->withArgument('esl-erlang_20.3-1~debian~stretch_amd64.deb'),
+                    ->withArgument('update')
+                    ->withShortOption('y'),
                 Command::foreground('apt')
                     ->withArgument('install')
                     ->withShortOption('y')
-                    ->withArgument('rabbitmq-server'),
+                    ->withArgument('rabbitmq-server')
+                    ->withOption('fix-missing'),
                 Command::foreground('rabbitmq-plugins')
                     ->withArgument('enable')
                     ->withArgument('rabbitmq_management'),

@@ -19,6 +19,13 @@ use Innmind\Server\Control\{
 
 final class Install implements Gene
 {
+    private string $distribution;
+
+    public function __construct(string $distribution = 'bionic')
+    {
+        $this->distribution = $distribution;
+    }
+
     public function name(): string
     {
         return 'AMQP install';
@@ -61,14 +68,14 @@ final class Install implements Gene
                     ->withShortOption('y')
                     ->withArgument('apt-transport-https'),
                 Command::foreground('echo')
-                    ->withArgument('deb https://dl.bintray.com/rabbitmq-erlang/debian bionic erlang')
+                    ->withArgument("deb https://dl.bintray.com/rabbitmq-erlang/debian {$this->distribution} erlang")
                     ->pipe(
                         Command::foreground('tee')
                             ->withShortOption('a')
                             ->withArgument('/etc/apt/sources.list.d/bintray.rabbitmq.list'),
                     ),
                 Command::foreground('echo')
-                    ->withArgument('deb https://dl.bintray.com/rabbitmq/debian bionic main')
+                    ->withArgument("deb https://dl.bintray.com/rabbitmq/debian {$this->distribution} main")
                     ->pipe(
                         Command::foreground('tee')
                             ->withShortOption('a')
